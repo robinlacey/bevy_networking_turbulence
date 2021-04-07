@@ -48,17 +48,16 @@ pub struct NetworkingPlugin {
 impl Plugin for NetworkingPlugin {
     fn build(&self, app: &mut AppBuilder) {
         let task_pool = app
-            .resources()
-            .get::<IoTaskPool>()
+            .world().get_resource::<IoTaskPool>()
             .expect("IoTaskPool resource not found")
             .0
             .clone();
 
-        app.add_resource(NetworkResource::new(
+        app.world_mut().insert_resource(NetworkResource::new(
             task_pool,
             self.link_conditioner.clone(),
-        ))
-        .add_event::<NetworkEvent>()
+        ));
+        app.add_event::<NetworkEvent>()
         .add_system(receive_packets.system());
     }
 }
